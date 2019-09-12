@@ -8,7 +8,7 @@ import {
   BaseStorage
 } from '@worldsibu/convector-core';
 
-import { Participant } from './participant.model';
+import { Participant } from './models/participant.model';
 import { ClientIdentity } from 'fabric-shim';
 
 @Controller('participant')
@@ -19,12 +19,7 @@ export class ParticipantController extends ConvectorController {
   };
 
   @Invokable()
-  public async register(
-    @Param(yup.string())
-      id: string,
-    @Param(yup.string())
-      name: string,
-  ) {
+  public async register(@Param(yup.string()) id: string, @Param(yup.string())name: string) {
     // Retrieve to see if exists
     const existing = await Participant.getOne(id);
 
@@ -44,12 +39,7 @@ export class ParticipantController extends ConvectorController {
     }
   }
   @Invokable()
-  public async changeIdentity(
-    @Param(yup.string())
-      id: string,
-    @Param(yup.string())
-      newIdentity: string
-  ) {
+  public async changeIdentity(@Param(yup.string()) id: string, @Param(yup.string()) newIdentity: string) {
     // Check permissions
     let isAdmin = this.fullIdentity.getAttributeValue('admin');
     let requesterMSP = this.fullIdentity.getMSPID();
@@ -75,17 +65,11 @@ export class ParticipantController extends ConvectorController {
     });
 
     // Set the enrolling identity
-    existing.identities.push({
-      fingerprint: newIdentity,
-      status: true
-    });
+    existing.identities.push({fingerprint: newIdentity, status: true});
     await existing.save();
   }
   @Invokable()
-  public async get(
-    @Param(yup.string())
-      id: string
-  ) {
+  public async get(@Param(yup.string()) id: string) {
     const existing = await Participant.getOne(id);
     if (!existing || !existing.id) {
       throw new Error(`No identity exists with that ID ${id}`);
